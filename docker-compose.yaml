@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    container_name: coffee_db
+    environment:
+      POSTGRES_DB: coffee_bonus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - db_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+    container_name: coffee_server
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: coffee_bonus
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
